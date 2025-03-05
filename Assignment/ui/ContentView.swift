@@ -8,18 +8,21 @@
 import SwiftUI
 
 struct ContentView: View {
-    private var viewModel = ContentViewModel()
+    @StateObject private var viewModel = ContentViewModel()
     @State private var path: [DeviceData] = [] // Navigation path
 
     var body: some View {
         NavigationStack(path: $path) {
             Group {
-                if let computers = viewModel.data, !computers.isEmpty {
-                    DevicesList(devices: computers) { selectedComputer in
+                if !viewModel.data.isEmpty {
+                    DevicesList(devices: viewModel.data) { selectedComputer in
                         viewModel.navigateToDetail(navigateDetail: selectedComputer)
                     }
                 } else {
                     ProgressView("Loading...")
+                }
+                if viewModel.isOffline{
+                    Text("Cached Data Displayed")
                 }
             }
             .onChange(of: viewModel.navigateDetail, {
